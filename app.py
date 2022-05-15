@@ -25,13 +25,14 @@ def listUrls(cardname,page=3):
         r.html.render(sleep=5)
         products = r.html.links
         session.close()
-
         for i in products:
-            if i.startswith('/products/' + cardname.replace(" ", "-")) or i.startswith('/products/mtg-' + cardname.replace(" ", "-")):
-                #test = r.html.find('a[href="' + i + '"] div.product-detail div.grid-view-item__title', clean = True)
-                #if re.search("^" + cardname + "\s(\[|\()", test[0].text):
-                resultArr.append("https://www.alaragames.se" + i)
+            if i.startswith("/products/"):
+                el=r.html.find('a[href="' + i + '"] div.product-detail div.grid-view-item__title', clean = True)
+                if el[0].text.lower().startswith(cardname + " (") or el[0].text.lower().startswith(cardname + " ["):
+                    resultArr.append("https://www.alaragames.se" + i)
     return resultArr
+            
+
             
 #inStock("https://www.alaragames.se/collections/mtgsingles/products/endurance-modern-horizons-2?variant=40240083239112")
 
