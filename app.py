@@ -92,8 +92,8 @@ def main():
 
 checkRunning = False
 
-main()
 statusDiscord()
+main()
 
 schedule.every(int(timer)).hours.do(main)
 
