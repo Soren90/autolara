@@ -1,8 +1,17 @@
 from time import sleep
 from requests_html import HTMLSession
+from discord_webhook import DiscordWebhook, DiscordEmbed
+import schedule
+import os
+from dotenv import load_dotenv
 
 
-#url="https://www.alaragames.se/pages/advanced-search?q=endurance&game=mtg&availabilty=false&condition=&printing=&setNames=&colors=&rarities=&types=&pricemin=&pricemax=&page=1&order=price-descending"
+# Soon to be env vars:
+load_dotenv()
+webhookurl = os.getenv('webhookurl')
+timer = os.getenv('timer')
+
+# Not used at the moment 
 def inStock(url):
     session = HTMLSession()
     r = session.get(url)
@@ -30,34 +39,64 @@ def listUrls(cardname,page=3):
         if not resultArr:
             break
     return resultArr
-            
 
-##########################
-#  Test inStock function #
-##########################
+def runFilecheck():
+    cardsfile = open('cards.txt', 'r')
+    fileLines = cardsfile.readlines()
+    count = 0
+    cardsfile.close()
+    for line in fileLines:
+        count += 1
+        cardurls = listUrls(line.strip())
+        if not cardurls:
+            print(line.strip().title() + " is not in stock")
+        else:
+            print(line.strip().title() + " is in stock! " + "\n" + "\n".join(cardurls))
+            sendDiscord(line.strip().title() + " is in stock! " + "\n" + "\n".join(cardurls))
+            newfile = open("cards.txt", "w")
+            del fileLines[count - 1]
+            for line in fileLines:
+                newfile.write(line)
+            newfile.close()
+            statusDiscord()
 
-#inStock("https://www.alaragames.se/collections/mtgsingles/products/endurance-modern-horizons-2?variant=40240083239112")
+def statusDiscord():
+    cardsfile = open('cards.txt', 'r')
+    fileLines = cardsfile.readlines()
+    cardsfile.close()
 
-#if inStock("https://www.alaragames.se/collections/karusell-singles-1/products/tainted-indulgence-streets-of-new-capenna"):
-#    print("In stock")
-#else:
-#    print("Not in stock")
+    webhook = DiscordWebhook(url=webhookurl, username="Autolara")
 
-##########################
-# Test listUrls function #
-##########################
-#urlList = listUrls("lighTning bolt")
-#print(urlList)
+    embed = DiscordEmbed(title='Tracked cards', description="".join(fileLines).title(), color='03b2f8')
+    embed.set_author(name='Autolara', url='https://alaragames.se', icon_url='https://cdn.shopify.com/s/files/1/0275/0146/1640/files/Alara_Games_Gradient_32x32.png')
+    #embed.set_timestamp()
+    #embed.add_embed_field(name='______', value='Lightningbolt' + "\n" + "Endurance")
 
-cardsfile = open('cards.txt', 'r')
-fileLines = cardsfile.readlines()
-count = 0
+    webhook.add_embed(embed)
+    response = webhook.execute()
 
-for line in fileLines:
-    count += 1
-    cardurls = listUrls(line.strip())
-    if not cardurls:
-        print(line.strip() + " is not in stock")
+def sendDiscord(message):
+    webhook = DiscordWebhook(url=webhookurl, content=message)
+    sent_webhook = webhook.execute()
+    webhook.remove_embeds()
+
+def main():
+    #global checkRunning
+
+    if checkRunning:
+        print("Check is already running. Skipping this run... ")
     else:
-        print(line.strip() + " is in stock!")
-    print(cardurls)
+        #checkRunning = True
+        runFilecheck()
+        #checkRunning = False
+
+checkRunning = False
+
+main()
+statusDiscord()
+
+schedule.every(int(timer)).hours.do(main)
+
+while True:
+    schedule.run_pending()
+    sleep(50)
