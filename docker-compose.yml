@@ -5,6 +5,8 @@ services:
     volumes:
       - cards.txt:/app/cards.txt
     environment:
+      # Webhooks: https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
       webhookurl: ""
+      # Run checks every 8 hours
       timer: 8
      
