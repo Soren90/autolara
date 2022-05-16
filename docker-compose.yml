@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  autolara:
+    build: .
+    volumes:
+      - cards.txt:/app/cards.txt
+    environment:
+      webhookurl: ""
+      timer: 1 
