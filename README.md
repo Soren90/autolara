@@ -1,4 +1,4 @@
-# autolara
+# Autolara
 
 This scraper will check https://alaragames.se for new cards and send webhook notification on discord when the card is in stock
 
@@ -16,3 +16,6 @@ Endurance
 Lightning bolt
 Abrupt decay
 ``` 
+
+### Preview 
+![Preview](https://raw.githubusercontent.com/kubernetes-sigs/kubespray/master/img/discord.png)
