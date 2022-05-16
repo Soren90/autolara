@@ -18,4 +18,4 @@ Abrupt decay
 ``` 
 
 ### Preview 
-![Preview](https://raw.githubusercontent.com/kubernetes-sigs/kubespray/master/img/discord.png)
+![Preview](https://raw.githubusercontent.com/Soren90/autolara/master/img/discord.png)
