@@ -6,4 +6,5 @@ services:
       - cards.txt:/app/cards.txt
     environment:
       webhookurl: ""
-      timer: 1 
+      timer: 8
+     
